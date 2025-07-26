@@ -2,32 +2,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>登入頁面</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
-        input { font-size: 1.2em; padding: 10px; width: 200px; }
-        button { font-size: 1.2em; padding: 10px 20px; margin-top: 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>登入驗證</title>
+  <style>
+    body { font-family: Arial; background: #f2f2f2; display: flex; height: 100vh; justify-content: center; align-items: center; }
+    #login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    input { padding: 10px; margin: 10px 0; width: 100%; font-size: 16px; }
+    button { padding: 10px; width: 100%; font-size: 16px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+  </style>
 </head>
 <body>
-    <h2>請輸入密碼進入網站</h2>
-    <input type="password" id="password" placeholder="密碼" />
-    <br>
-    <button onclick="login()">登入</button>
-    <p id="error" style="color:red;"></p>
+  <div id="login-box">
+    <h2>請輸入密碼</h2>
+    <input type="password" id="pw" placeholder="Password">
+    <button onclick="check()">登入</button>
+    <p id="msg" style="color:red;"></p>
+  </div>
 
-    <script>
-        function login() {
-            const correctPassword = "win888";
-            const input = document.getElementById("password").value;
-            if (input === correctPassword) {
-                localStorage.setItem("loggedIn", "true");
-                window.location.href = "index.html";
-            } else {
-                document.getElementById("error").textContent = "密碼錯誤，請再試一次。";
-            }
-        }
-    </script>
+  <script>
+    function check() {
+      const pw = document.getElementById("pw").value;
+      if (pw === "win888") {
+        sessionStorage.setItem("authenticated", "yes");
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("msg").textContent = "密碼錯誤";
+      }
+    }
+  </script>
 </body>
 </html>
