@@ -163,6 +163,24 @@ window.onload = function() {
 
 
 
+function calculateAsianStats(filtered) {
+  let win = 0, lose = 0, draw = 0;
+  filtered.forEach(row => {
+    const line = parseFloat(row.handicap_close_line);
+    const home = parseInt(row.full_home_goals);
+    const away = parseInt(row.full_away_goals);
+    if (isNaN(line) || isNaN(home) || isNaN(away)) return;
+
+    const diff = home - away;
+    const result = diff - line;
+
+    if (result > 0) {
+      win += 1;
+    } else if (result < 0) {
+      lose += 1;
+    } else {
+      draw += 1;
+    }
   });
   const total = win + lose + draw;
   const winPct = total ? (win / total * 100).toFixed(2) : "0.00";
@@ -174,8 +192,6 @@ window.onload = function() {
 }
 
 
-
-
 function evaluateHandicapResult(home, away, handicap) {
   const diff = home - away;
   const abs = Math.abs(handicap);
@@ -183,37 +199,13 @@ function evaluateHandicapResult(home, away, handicap) {
   const adj = diff * dir;
   const rem = abs % 1;
 
-  if (abs === 0.0) {
-    return adj > 0 ? "win" : (adj < 0 ? "lose" : "draw");
-  }
-
+  if (abs === 0.0) return adj > 0 ? "win" : (adj < 0 ? "lose" : "draw");
   if (rem === 0.25) {
     if (adj > Math.floor(abs)) return "win";
     if (adj === Math.floor(abs)) return "half_win";
     if (adj === 0) return "half_lose";
     return "lose";
   }
-
-  if (rem === 0.5) {
-    return adj > abs ? "win" : "lose"; // draw 不可能出現
-  }
-
-  if (rem === 0.75) {
-    if (adj >= Math.ceil(abs)) return "win";
-    if (adj === Math.floor(abs)) return "half_win";
-    if (adj === 0) return "half_lose";
-    return "lose";
-  }
-
-  if (rem === 0.0) {
-    if (adj > abs) return "win";
-    if (adj === abs) return "draw"; // 整數盤才可能 draw
-    return "lose";
-  }
-
-  return "lose";
-}
-
   if (rem === 0.5) return adj >= abs ? "win" : "lose";
   if (rem === 0.75) {
     if (adj >= Math.ceil(abs)) return "win";
@@ -244,12 +236,3 @@ function calculateAsianStats(filtered) {
   document.getElementById("asian-stats").innerText =
     `主贏盤 ${win} 場 (${winPct}%)　主輸盤 ${lose} 場 (${losePct}%)　走水 ${draw} 場 (${drawPct}%)`;
 }
-
-
-document.addEventListener("DOMContentLoaded", function() {
-  loadData();
-  generateAsianLines("asian-open-line");
-  generateAsianLines("asian-close-line");
-  generateOULines("ou-open-line");
-  generateOULines("ou-close-line");
-});
