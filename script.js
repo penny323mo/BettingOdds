@@ -175,6 +175,7 @@ window.onload = function() {
 
 
 
+
 function evaluateHandicapResult(home, away, handicap) {
   const diff = home - away;
   const abs = Math.abs(handicap);
@@ -182,13 +183,37 @@ function evaluateHandicapResult(home, away, handicap) {
   const adj = diff * dir;
   const rem = abs % 1;
 
-  if (abs === 0.0) return adj > 0 ? "win" : (adj < 0 ? "lose" : "draw");
+  if (abs === 0.0) {
+    return adj > 0 ? "win" : (adj < 0 ? "lose" : "draw");
+  }
+
   if (rem === 0.25) {
     if (adj > Math.floor(abs)) return "win";
     if (adj === Math.floor(abs)) return "half_win";
     if (adj === 0) return "half_lose";
     return "lose";
   }
+
+  if (rem === 0.5) {
+    return adj > abs ? "win" : "lose"; // draw 不可能出現
+  }
+
+  if (rem === 0.75) {
+    if (adj >= Math.ceil(abs)) return "win";
+    if (adj === Math.floor(abs)) return "half_win";
+    if (adj === 0) return "half_lose";
+    return "lose";
+  }
+
+  if (rem === 0.0) {
+    if (adj > abs) return "win";
+    if (adj === abs) return "draw"; // 整數盤才可能 draw
+    return "lose";
+  }
+
+  return "lose";
+}
+
   if (rem === 0.5) return adj >= abs ? "win" : "lose";
   if (rem === 0.75) {
     if (adj >= Math.ceil(abs)) return "win";
