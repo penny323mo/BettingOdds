@@ -109,15 +109,39 @@ function renderResult(domId, data, mode) {
   // 統計（場數＋百分比）
   const total = data.length;
   if (mode === 'asian') {
-    const win = data.filter(r => r.result === 'H').length;
-    const lose = data.filter(r => r.result === 'A').length;
-    const draw = data.filter(r => r.result === 'D').length;
+    
+    let win = 0, lose = 0, draw = 0;
+    data.forEach(r => {
+      try {
+        const [homeScore, awayScore] = r.final_score.split(':').map(Number);
+        const handicap = parseFloat(r.handicap_close_line);
+        const adjusted = homeScore + handicap - awayScore;
+        if (adjusted > 0) win++;
+        else if (adjusted === 0) draw++;
+        else lose++;
+      } catch (e) {
+        // 若資料異常則跳過
+      }
+    });
+    
     html += `<div class="stat-box">主贏盤 ${win} 場（${pct(win,total)}）　主輸盤 ${lose} 場（${pct(lose,total)}）　走水 ${draw} 場（${pct(draw,total)}）</div>`;
   } else {
     // 大小球暫時假設 H=大, A=細, D=和
-    const win = data.filter(r => r.result === 'H').length;
-    const lose = data.filter(r => r.result === 'A').length;
-    const draw = data.filter(r => r.result === 'D').length;
+    
+    let win = 0, lose = 0, draw = 0;
+    data.forEach(r => {
+      try {
+        const [homeScore, awayScore] = r.final_score.split(':').map(Number);
+        const handicap = parseFloat(r.handicap_close_line);
+        const adjusted = homeScore + handicap - awayScore;
+        if (adjusted > 0) win++;
+        else if (adjusted === 0) draw++;
+        else lose++;
+      } catch (e) {
+        // 若資料異常則跳過
+      }
+    });
+    
     html += `<div class="stat-box">大球 ${win} 場（${pct(win,total)}）　細球 ${lose} 場（${pct(lose,total)}）　和 ${draw} 場（${pct(draw,total)}）</div>`;
   }
   // 比賽列表
