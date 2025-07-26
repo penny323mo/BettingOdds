@@ -104,22 +104,42 @@ function pct(val, total) {
   if (total === 0) return "0.00%";
   return (val / total * 100).toFixed(2) + "%";
 }
-function renderResult(domId, data, mode) {
-  let html = '';
-  // 統計（場數＋百分比）
-  const total = data.length;
-  if (mode === 'asian') {
-    
-    let win = 0, lose = 0, draw = 0;
-    data.forEach(r => {
-      try {
-        const [homeScore, awayScore] = r.final_score.split(':').map(Number);
-        const handicap = parseFloat(r.handicap_close_line);
-        const adjusted = homeScore + handicap - awayScore;
-        if (adjusted > 0) win++;
-        else if (adjusted === 0) draw++;
-        else lose++;
-      } catch (e) {
+function renderResult(data, mode) {
+  let win = 0, draw = 0, lose = 0, total = 0;
+
+  data.forEach(r => {
+    try {
+      const scoreStr = r.final_score.replace(/[：\-]/g, ':'); // 替換分隔符為標準冒號
+      const [homeStr, awayStr] = scoreStr.split(':').map(s => s.trim());
+      const home = parseInt(homeStr, 10);
+      const away = parseInt(awayStr, 10);
+      const line = parseFloat(r.handicap_close_line);
+
+      if (isNaN(home) || isNaN(away) || isNaN(line)) {
+        throw new Error("Invalid score or line");
+      }
+
+      const diff = home + line - away;
+
+      if (diff > 0) win++;
+      else if (diff === 0) draw++;
+      else lose++;
+
+      total++;
+    } catch (e) {
+      console.warn("Skipping row due to parse error:", r, e.message);
+    }
+  });
+
+  const percent = (n) => total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '-';
+
+  document.getElementById('result').innerHTML = `
+    <p><strong>總場數：</strong>${total}</p>
+    <p><strong>贏盤：</strong>${win} 場（${percent(win)}）</p>
+    <p><strong>走水：</strong>${draw} 場（${percent(draw)}）</p>
+    <p><strong>輸盤：</strong>${lose} 場（${percent(lose)}）</p>
+  `;
+} catch (e) {
         // 若資料異常則跳過
       }
     });
