@@ -208,8 +208,7 @@ function calculateAsianStats(filtered) {
     const away = parseInt(row.full_away_goals);
     if (isNaN(line) || isNaN(home) || isNaN(away)) return;
 
-    const diff = home - away;
-    const result = diff - line;
+    const result = home + line - away;
 
     if (result > 0) {
       win += 1;
