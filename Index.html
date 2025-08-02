@@ -538,16 +538,31 @@ const EU_URL = 'https://drive.google.com/uc?export=download&id=1QvJSs-c2bUozWRUg
     /***********************************************/
     /* 資料載入與輔助函數 (from Finalx.html)    */
     /***********************************************/
+   
+const PROXY = 'https://api.allorigins.win/raw?url=';
+    
     let AH = [], OU = [], EU = [];
     
-    Promise.all([
-  fetch(AH_URL).then(r=>r.json()).then(d=>AH=d),
-  fetch(OU_URL).then(r=>r.json()).then(d=>OU=d),
-  fetch(EU_URL).then(r=>r.json()).then(d=>EU=d),
-])
-.then(() => {
-  initAll();  // 保留你原本用嚟啟動頁面邏輯嘅函式
-})
+      Promise.all([
+    fetch(PROXY + encodeURIComponent(AH_URL))
+      .then(r => r.ok ? r.json() : Promise.reject('AH load fail'))
+      .then(d => AH = d),
+
+    fetch(PROXY + encodeURIComponent(OU_URL))
+      .then(r => r.ok ? r.json() : Promise.reject('OU load fail'))
+      .then(d => OU = d),
+
+    fetch(PROXY + encodeURIComponent(EU_URL))
+      .then(r => r.ok ? r.json() : Promise.reject('EU load fail'))
+      .then(d => EU = d),
+  ])
+  .then(() => {
+    initAll();  // 保留你原本啟動頁面嘅初始化函式
+  })
+  .catch(err => {
+    console.error('JSON 載入錯誤：', err);
+    alert('資料載入失敗，請稍後再試。');
+  })
 .catch(err => {
   console.error('JSON 載入錯誤：', err);
   alert('資料載入失敗，請稍後再試。');
