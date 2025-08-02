@@ -532,16 +532,26 @@
         document.getElementById("tc"+(idx+1)).style.display = idx===i?"block":"none";
       });
     }
-
+const AH_URL = 'https://drive.google.com/uc?export=download&id=1_X68t_EG2LDZcaNjbhgQ9UhrAkHMoeJO';
+const OU_URL = 'https://drive.google.com/uc?export=download&id=1b28Lq7TW1_VqY0paOgYVteTQ3PyQHOMA';
+const EU_URL = 'https://drive.google.com/uc?export=download&id=1QvJSs-c2bUozWRUgoSNJcmmgCp5SiIX_';
     /***********************************************/
     /* 資料載入與輔助函數 (from Finalx.html)    */
     /***********************************************/
     let AH = [], OU = [], EU = [];
+    
     Promise.all([
-      fetch('asian_handicap.json').then(r=>r.json()).then(d=>AH=d),
-      fetch('over_under.json').then(r=>r.json()).then(d=>OU=d),
-      fetch('european_odds.json').then(r=>r.json()).then(d=>EU=d),
-    ]).then(initAll);
+  fetch(AH_URL).then(r=>r.json()).then(d=>AH=d),
+  fetch(OU_URL).then(r=>r.json()).then(d=>OU=d),
+  fetch(EU_URL).then(r=>r.json()).then(d=>EU=d),
+])
+.then(() => {
+  initAll();  // 保留你原本用嚟啟動頁面邏輯嘅函式
+})
+.catch(err => {
+  console.error('JSON 載入錯誤：', err);
+  alert('資料載入失敗，請稍後再試。');
+});
 
     function initAll(){
       fillSelect('ahInitHand', new Set(AH.map(r=>r.AH_open_handicap)));
